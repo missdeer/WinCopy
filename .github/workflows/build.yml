@@ -69,6 +69,12 @@ jobs:
           jom -j 8
           cd ..
           
+      - name: upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          path: build\Release\WinCopy.exe
+          name: WinCopy-${{ matrix.qt_arch }}
+          
   win32-clang-msvc:
     runs-on: windows-latest
     strategy:
@@ -139,6 +145,12 @@ jobs:
           qmake -r -spec win32-clang-msvc CONFIG+=release CONFIG+=qtquickcompiler ..\${{ env.targetName }}.pro
           jom -j 8
           cd ..
+          
+      - name: upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          path: build\Release\WinCopy.exe
+          name: WinCopy-clang-${{ matrix.qt_arch }}
           
   win32-mingw:
     runs-on: windows-latest
@@ -225,3 +237,8 @@ jobs:
           mingw32-make.exe -j 4
           cd ..
 
+      - name: upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          path: build\Release\WinCopy.exe
+          name: WinCopy-${{ matrix.qt_arch }}
