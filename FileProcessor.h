@@ -14,7 +14,8 @@ template<class Processor> class FileProcessor : public utils::ISearchExaminer3
     const std::wstring &      m_srcPath;
     const std::wstring &      m_dstPath;
     uint64_t                  m_totalFilesProcessed;
-    std::vector<std::wstring> m_files;
+    std::vector<std::wstring>                           m_files;
+    std::function<void(std::wstring &, std::wstring &)> m_preprocessor;
 
 public:
     FileProcessor(const io::IoPool &ioPool, const std::wstring &srcPath, const std::wstring &dstPath)
@@ -27,6 +28,10 @@ public:
     uint64_t TotalProcessed() const
     {
         return m_totalFilesProcessed;
+    }
+    void SetPreprocessor(std::function<void(std::wstring &, std::wstring &)> f)
+    {
+        m_preprocessor = f;
     }
 
 private:
@@ -45,14 +50,12 @@ private:
                 ::SetEvent(completeEvent);
         };
 
-        for (const std::wstring &srcFile : m_files)
+        for (auto &srcFile : m_files)
         {
             try
             {
                 std::wstring dstFile = srcFile;
-                dstFile.replace(0, m_srcPath.size(), m_dstPath);
-
-                utils::EnsureDirectoriesChainForFile(dstFile);
+                m_preprocessor(srcFile, dstFile);
 
                 std::shared_ptr<Processor> processor = std::make_shared<Processor>(m_ioPool, srcFile, dstFile, onFileComplete);
 

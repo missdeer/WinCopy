@@ -16,6 +16,10 @@ namespace ProcessFiles
     void CopyFiles(const io::IoPool &ioPool, const std::wstring &src, const std::wstring &dst)
     {
         FileProcessor<copy::CopyFile> copier(ioPool, src, dst);
+        copier.SetPreprocessor([&src, &dst](std::wstring &, std::wstring &dstFile) {
+            dstFile.replace(0, src.size(), dst);
+            utils::EnsureDirectoriesChainForFile(dstFile);
+        });
         utils::CSearcher searcher(&copier);
         searcher.StartSearch(L"*", src, 0);
 
