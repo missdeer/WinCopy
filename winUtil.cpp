@@ -39,7 +39,7 @@ namespace utils
     std::wstring CSearcher::GetRootPath()  const
     { 
         if (m_states.empty())
-            throw std::exception("Cannot get root path: empty states");
+            throw std::runtime_error("Cannot get root path: empty states");
 
         return m_states.begin()->m_path;
     }
@@ -49,7 +49,7 @@ namespace utils
                                     int iMaximumLevels)
     {
         if (wstrPathName.empty())
-            throw std::exception("Cannot start search: empty name");
+            throw std::runtime_error("Cannot start search: empty name");
 
         m_iMaximumLevels = iMaximumLevels;
         if (wstrPathName[wstrPathName.length()-1]!=L'\\' && wstrPathName[wstrPathName.length()-1]!=L'/')
