@@ -10,18 +10,18 @@ inline const int ConcurrentFiles = 1000; // Copy 1000 files simultaneously
 
 template<class Processor> class FileProcessor : public utils::ISearchExaminer3
 {
-    const io::IoPool &        m_ioPool;
-    const std::wstring &      m_srcPath;
-    const std::wstring &      m_dstPath;
-    uint64_t                  m_totalFilesProcessed;
+    const io::IoPool &                                  m_ioPool;
+    const std::wstring &                                m_wParam;
+    const std::wstring &                                m_lParam;
+    uint64_t                                            m_totalFilesProcessed;
     std::vector<std::wstring>                           m_files;
     std::function<void(std::wstring &, std::wstring &)> m_preprocessor;
 
 public:
-    FileProcessor(const io::IoPool &ioPool, const std::wstring &srcPath, const std::wstring &dstPath)
+    FileProcessor(const io::IoPool &ioPool, const std::wstring &wParam, const std::wstring &lParam)
         : m_ioPool(ioPool)
-        , m_srcPath(srcPath)
-        , m_dstPath(dstPath)
+        , m_wParam(wParam)
+        , m_lParam(lParam)
         , m_totalFilesProcessed(0)
     {
     }
@@ -98,7 +98,7 @@ private:
     void OnDirectoryFound(const std::wstring &, WIN32_FIND_DATAW *) {}
     void OnDoneDirectory(const std::wstring &path)
     {
-        if (path.empty() || path != m_srcPath)
+        if (path.empty() || path != m_wParam)
             return;
 
         ProcessFiles();
