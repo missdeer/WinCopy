@@ -66,7 +66,7 @@ jobs:
           mkdir build
           cd build
           qmake -r CONFIG+=release CONFIG+=qtquickcompiler ..\${{ env.targetName }}.pro
-          jom -j 8
+          jom -j %NUMBER_OF_PROCESSORS%
           cd ..
           
       - name: upload artifact
@@ -143,7 +143,7 @@ jobs:
           mkdir build
           cd build
           qmake -r -spec win32-clang-msvc CONFIG+=release CONFIG+=qtquickcompiler ..\${{ env.targetName }}.pro
-          jom -j 8
+          jom -j %NUMBER_OF_PROCESSORS%
           cd ..
           
       - name: upload artifact
@@ -234,7 +234,7 @@ jobs:
         shell: msys2 {0}
         run: |
           cd build
-          mingw32-make.exe -j 4
+          mingw32-make.exe -j %NUMBER_OF_PROCESSORS%
           cd ..
 
       - name: upload artifact
