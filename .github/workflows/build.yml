@@ -53,7 +53,7 @@ jobs:
           mkdir jom
           cd jom
           curl.exe -o jom.zip -L https://download.qt.io/official_releases/jom/jom_1_1_3.zip
-          7z.exe x jom.zip
+          if exist jom.zip 7z.exe x jom.zip
           cd ..
           
       - name: build-msvc
@@ -63,10 +63,12 @@ jobs:
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
           set PATH=%PATH%;%CD%\jom
+          set OLDPWD=%CD%
           mkdir build
           cd build
           qmake -r CONFIG+=release CONFIG+=qtquickcompiler ..\${{ env.targetName }}.pro
-          jom -j %NUMBER_OF_PROCESSORS%
+          if exist %OLDPWD%\jom\jom.exe jom.exe -j %NUMBER_OF_PROCESSORS%
+          if not exist %OLDPWD%\jom\jom.exe nmake
           cd ..
           
       - name: upload artifact
@@ -87,12 +89,12 @@ jobs:
             msvc_arch: x64
             qt_arch_install: msvc2019_64
             mingw_arch: MINGW64 
-            clang_link: https://github.com/llvm/llvm-project/releases/download/llvmorg-11.0.0/LLVM-11.0.0-win64.exe
+            clang_link: https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/LLVM-12.0.0-win64.exe
           - qt_arch: win32_msvc2019
             msvc_arch: x86
             qt_arch_install: msvc2019
             mingw_arch: MINGW32
-            clang_link: https://github.com/llvm/llvm-project/releases/download/llvmorg-11.0.0/LLVM-11.0.0-win32.exe
+            clang_link: https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/LLVM-12.0.0-win32.exe
     env:
       targetName: WinCopy
       
@@ -130,7 +132,7 @@ jobs:
           mkdir jom
           cd jom
           curl.exe -o jom.zip -L https://download.qt.io/official_releases/jom/jom_1_1_3.zip
-          7z.exe x jom.zip
+          if exist jom.zip 7z.exe x jom.zip
           cd ..
           
       - name: build-msvc
@@ -140,10 +142,12 @@ jobs:
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
           set PATH=%PATH%;%CD%\llvm\bin;%CD%\jom
+          set OLDPWD=%CD%
           mkdir build
           cd build
           qmake -r -spec win32-clang-msvc CONFIG+=release CONFIG+=qtquickcompiler ..\${{ env.targetName }}.pro
-          jom -j %NUMBER_OF_PROCESSORS%
+          if exist %OLDPWD%\jom\jom.exe jom.exe -j %NUMBER_OF_PROCESSORS%
+          if not exist %OLDPWD%\jom\jom.exe nmake
           cd ..
           
       - name: upload artifact
@@ -234,7 +238,7 @@ jobs:
         shell: msys2 {0}
         run: |
           cd build
-          mingw32-make.exe -j $NUMBER_OF_PROCESSORS
+          mingw32-make.exe -j `nproc`
           cd ..
 
       - name: upload artifact
